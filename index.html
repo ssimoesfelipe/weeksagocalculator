@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data de semanas atrás</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="number"] {
+      width: 60px;
+    }
+    .result-container {
+      margin-top: 20px;
+    }
+    .result-container div {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .table-container {
+      display: flex;
+    }
+    .table-container table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    .table-container th, .table-container td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .table-container th {
+      background-color: #f2f2f2;
+    }
+    .table-container .table-half {
+      width: 50%;
+      padding-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Data de semanas atrás</h1>
+
+  <label for="weeks">Número de semanas atrás:</label>
+  <input type="number" id="weeks" min="1" value="" oninput="calculateDate()">
+
+  <div class="result-container">
+    <div>Data:</div>
+    <input type="text" id="dateResult" readonly>
+    <div>Dia da semana:</div>
+    <input type="text" id="weekdayResult" readonly>
+    <div>Dia do ano:</div>
+    <input type="text" id="dayOfYearResult" readonly>
+    <div>Semana do ano:</div>
+    <input type="text" id="weekOfYearResult" readonly>
+  </div>
+
+  <h2>Últimas 50 semanas</h2>
+  <div class="table-container">
+    <div class="table-half">
+      <table id="weeksTable1">
+        <tr>
+          <th>Semana</th>
+          <th>Data</th>
+        </tr>
+      </table>
+    </div>
+    <div class="table-half">
+      <table id="weeksTable2">
+        <tr>
+          <th>Semana</th>
+          <th>Data</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function calculateDate() {
+      var weeksInput = document.getElementById("weeks");
+      var weeksAgo = parseInt(weeksInput.value);
+      
+      var targetDate = new Date();
+      if (!isNaN(weeksAgo)) {
+        targetDate.setDate(targetDate.getDate() - (weeksAgo * 7));
+      }
+
+      var day = targetDate.getDate();
+      var month = targetDate.getMonth() + 1;
+      var year = targetDate.getFullYear();
+
+      var weekday = targetDate.toLocaleDateString("en-US", { weekday: 'long' });
+      
+      var startOfYear = new Date(year, 0, 0);
+      var diff = targetDate - startOfYear;
+      var oneDay = 1000 * 60 * 60 * 24;
+      var dayOfYear = Math.floor(diff / oneDay);
+
+      var weekOfYear = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
+
+      document.getElementById("dateResult").value = day + "/" + month + "/" + year;
+      document.getElementById("weekdayResult").value = weekday;
+      document.getElementById("dayOfYearResult").value = dayOfYear;
+      document.getElementById("weekOfYearResult").value = weekOfYear;
+
+      populateWeeksTable();
+    }
+
+    function populateWeeksTable() {
+      var table1 = document.getElementById("weeksTable1");
+      table1.innerHTML = "<tr><th>Semana</th><th>Data</th></tr>";
+
+      var table2 = document.getElementById("weeksTable2");
+      table2.innerHTML = "<tr><th>Semana</th><th>Data</th></tr>";
+
+      var currentDate = new Date();
+      var weekNumber = 1;
+
+      for (var i = 1; i <= 50; i++) {
+        var row = i <= 25 ? table1.insertRow(i) : table2.insertRow(i - 25);
+        var weekCell = row.insertCell(0);
+        var dateCell = row.insertCell(1);
+
+        var date = new Date(currentDate);
+        date.setDate(date.getDate() - (i * 7));
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+
+        weekCell.innerHTML = weekNumber;
+        weekNumber++;
+
+        dateCell.innerHTML = day + "/" + month + "/" + year;
+      }
+    }
+    
+    // Chamar a função uma vez no início para exibir a data e o dia da semana atual
+    calculateDate();
+  </script>
+</body>
+</html>
